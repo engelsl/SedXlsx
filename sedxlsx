@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+import sys
+import openpyxl
+import re
+
+# author : Loïc ENGELS
+# Function to perform search and replace on a worksheet using regex
+
+
+def sed_excel(ws, search_pattern, replace_pattern):
+    for row in ws.iter_rows():
+        for cell in row:
+            if cell.value and isinstance(cell.value, str):
+                cell.value = re.sub(search_pattern, replace_pattern, cell.value)
+
+# Function to read, modify, and save the Excel file
+
+
+def modify_excel(search_pattern, replace_pattern, file_path):
+    """
+    Find and replace all instance of an string
+    and replace it with another string in  a exel file
+    without any library other than the one install by default in python
+
+    Input : Excel file, string to be replaced, string to be replaced with
+    Output : Excel file with replaced strings
+
+    Args:
+        file_name (_.xlsx): path to the file to modified
+        str1 (str): string to be replaced
+        str2 (str): string to add in place of str1
+
+    Examples:
+        modify_excel("s/Hello/Hi/", "example.xlsx")
+    """
+    # Load the Excel workbook and select the active worksheet
+    wb = openpyxl.load_workbook(file_path)
+
+    for ws in wb.worksheets:
+        # Perform the search and replace operationP
+        sed_excel(ws, search_pattern, replace_pattern)
+
+    # Save the modified workbook to the same Exel file
+    wb.save(file_path)
+
+
+def print_text():
+    text = """
+        Find and replace all instance of an string
+        and replace it with another string in  a exel file
+        without any library other than the one install by default in python
+
+        Input : Excel file, string to be replaced, string to be replaced with
+        Output : Excel file with replaced strings
+
+        Options available:
+
+            'help', --help : print this help message
+                ./sedxlsx help
+
+            's', --search : string to be replaced
+            Replace Hello by Hi in example.xlsx
+                ./sedxlsx s/Hello/Hi/ example.xlsx
+            
+            'd', --delete : string to be deleted
+            Delete all Hello in example.xlsx
+                ./sedxlsx d/Hello/ example.xlsx
+
+        Args:
+            file_name (_.xlsx): path to the file to modified
+            str1 (str): string to be replaced
+            str2 (str): string to add in place of str1
+        
+        Examples:
+            modify_excel("s/Hello/Hi/", "example.xlsx")
+
+        Be carrefuld to use the right syntax for the search and replace
+        Majuscule and minuscule are not the same
+    """
+    print(text)
+
+
+def main():
+    if sys.argv[1] == "help":
+        print_text()
+        return 1
+    if sys.argv[2].split(".")[-1] != "xlsx":
+        print("The file must be an Excel file with .xlsx extension")
+        return 1
+    args = sys.argv[1].split("/")
+    if args[0] == "s":
+        print(len(args))
+        if len(args) != 4:
+            print("Usage: sedxlsx s/<str1>/<str2>/ <file_name>")
+            print("To have more information use sedxlsx help")
+            return 1
+        modify_excel(args[1], args[2], sys.argv[2])
+    if args[0] == "d":
+        if len(args) != 3:
+            print("Usage: sedxlsx d/<str1>/ <file_name>")
+            print("To have more information use sedxlsx help")
+            return 1
+        modify_excel(args[1], "", sys.argv[2])
+    return 0
+
+
+if __name__ == "__main__":
+    main()
