@@ -10,7 +10,7 @@ chmod u+x sedxlsx
 
 Then you can run the command with the following line 
 ```bash
-./sedxlsx "s/word_to_be_replace/word_to_add" ""path_to_file"
+./sedxlsx "s/word_to_be_replace/word_to_add" "path_to_file"
 ```
 
 ## If need help on command 
